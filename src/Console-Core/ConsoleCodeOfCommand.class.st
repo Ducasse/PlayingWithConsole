@@ -22,18 +22,18 @@ show Character class>>#euro
 
 "
 Class {
-	#name : #NeoConsoleShowCommand,
-	#superclass : #NeoConsoleCommand,
+	#name : #ConsoleCodeOfCommand,
+	#superclass : #ConsoleCommand,
 	#category : #'Console-Core'
 }
 
 { #category : #accessing }
-NeoConsoleShowCommand class >> prefix [
-	^ 'show'
+ConsoleCodeOfCommand class >> defaultName [ 
+	^ 'Code of Class/Method'
 ]
 
 { #category : #public }
-NeoConsoleShowCommand >> execute [
+ConsoleCodeOfCommand >> execute [
 	self hasArguments 
 		ifTrue: [ | thing |
 			thing := [ self class compiler evaluate: self argument ] on: Exception do: [ nil ].
@@ -50,8 +50,8 @@ NeoConsoleShowCommand >> execute [
 ]
 
 { #category : #'initialization-release' }
-NeoConsoleShowCommand >> on: input [
+ConsoleCodeOfCommand >> on: input [
 	super on: input.
-	(self argument beginsWith: self class prefix)
-		ifTrue: [ arguments := Array with: (self argument allButFirst: self class prefix size) trimBoth ]
+	(self argument beginsWith: self class consoleCommandName)
+		ifTrue: [ arguments := Array with: (self argument allButFirst: self class consoleCommandName size) trimBoth ]
 ]

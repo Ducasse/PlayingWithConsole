@@ -1,11 +1,11 @@
 "
-I am NeoConsoleCommand. I describe a command that can be executed by the NeoConsole infrastructure. I am abstract.
+I am ConsoleCommand. I describe a command that can be executed by the Console infrastructure. I am abstract.
 
 The class comments of my subclasses are used as help texts in the command line interface.
 "
 Class {
-	#name : #NeoConsoleCommand,
-	#superclass : #Object,
+	#name : #ConsoleCommand,
+	#superclass : #CmCommand,
 	#instVars : [
 		'arguments',
 		'result'
@@ -14,12 +14,19 @@ Class {
 }
 
 { #category : #accessing }
-NeoConsoleCommand class >> defaultCommand [
-	^ NeoConsoleEvalCommand 
+ConsoleCommand class >> consoleCommandName [
+	"We take the command name and expose part of it as a console command."
+	
+	^ (self defaultName copyUpTo: Character space) asLowercase
 ]
 
 { #category : #accessing }
-NeoConsoleCommand class >> forLine: line [
+ConsoleCommand class >> defaultCommand [
+	^ ConsoleEvalCommand 
+]
+
+{ #category : #accessing }
+ConsoleCommand class >> forLine: line [
 	| commandClass |
 	commandClass := self knownCommands 
 		detect: [ :each | each handlesLine: line ] 
@@ -28,12 +35,12 @@ NeoConsoleCommand class >> forLine: line [
 ]
 
 { #category : #testing }
-NeoConsoleCommand class >> handlesLine: line [
-	^ line beginsWith: self prefix
+ConsoleCommand class >> handlesLine: line [
+	^ line beginsWith: self consoleCommandName
 ]
 
 { #category : #accessing }
-NeoConsoleCommand class >> helpText [
+ConsoleCommand class >> helpText [
 	^ String streamContents: [ :out |
 			out << self name; cr.
 			self comment linesDo: [ :each | 
@@ -41,58 +48,53 @@ NeoConsoleCommand class >> helpText [
 ]
 
 { #category : #testing }
-NeoConsoleCommand class >> isMultiLine [
+ConsoleCommand class >> isMultiLine [
 	^ self isSingleLine not
 ]
 
 { #category : #testing }
-NeoConsoleCommand class >> isSingleLine [
+ConsoleCommand class >> isSingleLine [
 	^ true
 ]
 
 { #category : #accessing }
-NeoConsoleCommand class >> knownCommands [
+ConsoleCommand class >> knownCommands [
 	^ self subclasses
 ]
 
 { #category : #accessing }
-NeoConsoleCommand class >> prefix [
-	^ self subclassResponsibility 
-]
-
-{ #category : #accessing }
-NeoConsoleCommand >> argument [
+ConsoleCommand >> argument [
 	^ arguments first
 ]
 
 { #category : #accessing }
-NeoConsoleCommand >> arguments [
+ConsoleCommand >> arguments [
 	^ arguments 
 ]
 
 { #category : #public }
-NeoConsoleCommand >> execute [
+ConsoleCommand >> execute [
 	self subclassResponsibility 
 ]
 
 { #category : #testing }
-NeoConsoleCommand >> hasArguments [
+ConsoleCommand >> hasArguments [
 	^ arguments notNil and: [ arguments notEmpty ]
 ]
 
 { #category : #private }
-NeoConsoleCommand >> logException: exception on: out [
+ConsoleCommand >> logException: exception on: out [
 	out print: exception; cr.
 	exception signalerContext printDetails: out.
 	exception signalerContext sender debugStack: 8 on: out
 ]
 
 { #category : #'initialization-release' }
-NeoConsoleCommand >> on: input [
+ConsoleCommand >> on: input [
 	arguments := Array with: input trimBoth
 ]
 
 { #category : #accessing }
-NeoConsoleCommand >> result [
+ConsoleCommand >> result [
 	^ result
 ]

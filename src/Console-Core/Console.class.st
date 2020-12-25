@@ -8,7 +8,7 @@ I hold the last 3 results.
 I offer quick access to NeoConsoleEnvironment current.
 "
 Class {
-	#name : #NeoConsole,
+	#name : #Console,
 	#superclass : #Object,
 	#classVars : [
 		'History',
@@ -18,29 +18,29 @@ Class {
 }
 
 { #category : #accessing }
-NeoConsole class >> clearResults [
+Console class >> clearResults [
 	^ self results 
 		atAllPut: nil; 
 		yourself
 ]
 
 { #category : #accessing }
-NeoConsole class >> env [
+Console class >> env [
 	^ ConsoleEnvironment current
 ]
 
 { #category : #accessing }
-NeoConsole class >> history [
+Console class >> history [
 	^ History ifNil: [ History := OrderedCollection new ]
 ]
 
 { #category : #accessing }
-NeoConsole class >> last [
+Console class >> last [
 	^ self results last
 ]
 
 { #category : #accessing }
-NeoConsole class >> lastResult: anObject [
+Console class >> lastResult: anObject [
 	| results |
 	results := self results.
 	anObject = results ifTrue: [ ^ results ].
@@ -51,16 +51,16 @@ NeoConsole class >> lastResult: anObject [
 ]
 
 { #category : #accessing }
-NeoConsole class >> results [
+Console class >> results [
 	^ Results ifNil: [ Results := Array new: 3 ]
 ]
 
 { #category : #server }
-NeoConsole class >> startServer [
+Console class >> startServer [
 	^ ConsoleTelnetServer new start
 ]
 
 { #category : #server }
-NeoConsole class >> startServerOn: port [
+Console class >> startServerOn: port [
 	^ ConsoleTelnetServer startOn: port
 ]

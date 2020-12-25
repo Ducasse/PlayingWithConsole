@@ -29,17 +29,18 @@ NeoConsoleTelnetServerTests >> tearDown [
 
 { #category : #testing }
 NeoConsoleTelnetServerTests >> testConnect [
+
 	| connection in out line |
 	connection := ZdcSocketStream openConnectionToHost: self localhost port: server port timeout: 10.
 	in := ZnCharacterReadStream on: connection.
 	out := ZnCharacterWriteStream on: connection.
 	line := in nextLine.
-	self assert: (line includesSubstring: 'Neo Console').
+	self assert: (line includesSubstring: 'Console').
 	line := in next: 7.
-	self assert: line equals: 'pharo> '.
+	self assert: line equals: 'pharo>>'.
 	out nextPutAll: 'quit'; lf; flush.
 	line := in nextLine.
-	self assert: line equals: 'Bye!'.
+	self assert: line equals: '> Bye!'.
 	connection close
 ]
 
@@ -50,14 +51,14 @@ NeoConsoleTelnetServerTests >> testEvalSum [
 	in := ZnCharacterReadStream on: connection.
 	out := ZnCharacterWriteStream on: connection.
 	line := in nextLine.
-	self assert: (line includesSubstring: 'Neo Console').
+	self assert: (line includesSubstring: 'Console').
 	line := in next: 7.
-	self assert: line equals: 'pharo> '.
+	self assert: line equals: 'pharo>>'.
 	x := 999 atRandom.
 	y := 999 atRandom.
 	out nextPutAll: ('eval {1} + {2}' format: { x. y }); lf; lf; flush.
 	line := in nextLine.
-	self assert: line asNumber equals: x + y.
+	self assert: (line allButFirst: 2) asNumber equals: x + y.
 	out nextPutAll: 'quit'; lf; flush.
 	connection close
 ]
@@ -84,14 +85,14 @@ NeoConsoleTelnetServerTests >> testSumMultiline [
 	in := ZnCharacterReadStream on: connection.
 	out := ZnCharacterWriteStream on: connection.
 	line := in nextLine.
-	self assert: (line includesSubstring: 'Neo Console').
+	self assert: (line includesSubstring: 'Console').
 	line := in next: 7.
-	self assert: line equals: 'pharo> '.
+	self assert: line equals: 'pharo>>'.
 	x := 999 atRandom.
 	y := 999 atRandom.
 	out print: x; lf; nextPut: $+; lf; print: y; lf; lf; flush.
 	line := in nextLine.
-	self assert: line asNumber equals: x + y.
+	self assert: (line allButFirst: 2) asNumber equals: x + y.
 	out nextPutAll: 'quit'; lf; flush.
 	connection close
 ]

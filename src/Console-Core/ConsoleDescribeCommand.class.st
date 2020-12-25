@@ -18,25 +18,25 @@ describe
 
 "
 Class {
-	#name : #NeoConsoleDescribeCommand,
-	#superclass : #NeoConsoleCommand,
+	#name : #ConsoleDescribeCommand,
+	#superclass : #ConsoleCommand,
 	#category : #'Console-Core'
 }
 
-{ #category : #testing }
-NeoConsoleDescribeCommand class >> handlesLine: line [
-	^ line first = $= or: [ super handlesLine: line ]
-]
-
 { #category : #accessing }
-NeoConsoleDescribeCommand class >> prefix [
+ConsoleDescribeCommand class >> defaultName [
 	^ 'describe'
 ]
 
+{ #category : #testing }
+ConsoleDescribeCommand class >> handlesLine: line [
+	^ line first = $= or: [ super handlesLine: line ]
+]
+
 { #category : #public }
-NeoConsoleDescribeCommand >> execute [
+ConsoleDescribeCommand >> execute [
 	| object |
-	object := NeoConsole last.
+	object := Console last.
 	result := String streamContents: [ :out |
 		out << 'self: '; << (self printLimited: [ object ]); cr.
 		out << 'class: '; << object class name; cr.
@@ -55,14 +55,14 @@ NeoConsoleDescribeCommand >> execute [
 						out print: index; << ': '; << (self printLimited: [ object at: index ]); cr ] ] ] ]
 ]
 
-{ #category : #'initialization-release' }
-NeoConsoleDescribeCommand >> on: input [
+{ #category : #initialization }
+ConsoleDescribeCommand >> on: input [
 	super on: input.
 	arguments := self argument findTokens: Character separators.
 	arguments := arguments allButFirst 
 ]
 
 { #category : #private }
-NeoConsoleDescribeCommand >> printLimited: valuable [ 
+ConsoleDescribeCommand >> printLimited: valuable [ 
 	^ [ valuable value printStringLimitedTo: 64 ] on: Error do: [ '<error while printing>' ]
 ]

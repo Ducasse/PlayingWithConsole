@@ -23,23 +23,23 @@ example1
 
 "
 Class {
-	#name : #NeoConsoleAddCommand,
-	#superclass : #NeoConsoleCommand,
+	#name : #ConsoleCompileCommand,
+	#superclass : #ConsoleCommand,
 	#category : #'Console-Core'
 }
 
+{ #category : #accessing }
+ConsoleCompileCommand class >> defaultName [
+	^ 'compile'
+]
+
 { #category : #testing }
-NeoConsoleAddCommand class >> isSingleLine [
+ConsoleCompileCommand class >> isSingleLine [
 	^ false
 ]
 
-{ #category : #accessing }
-NeoConsoleAddCommand class >> prefix [
-	^ 'add'
-]
-
 { #category : #public }
-NeoConsoleAddCommand >> execute [
+ConsoleCompileCommand >> execute [
 	| lines targetClass source |
 	(lines := self argument lines) ifEmpty: [ ^ result := self class comment ].
 	targetClass := Smalltalk globals
@@ -52,16 +52,16 @@ NeoConsoleAddCommand >> execute [
 		streamContents: [ :out | 
 			[ | compileResult |
 			compileResult := targetClass compile: source.
-			NeoConsole lastResult: compileResult.
+			Console lastResult: compileResult.
 			out print: compileResult ]
 				on: Error , SyntaxErrorNotification
 				do: [ :exception | self logException: exception on: out ] ]
 ]
 
-{ #category : #'initialization-release' }
-NeoConsoleAddCommand >> on: input [
+{ #category : #initialization }
+ConsoleCompileCommand >> on: input [
 	super on: input.
-	(self argument beginsWith: self class prefix)
-		ifTrue: [ arguments := Array with: (self argument allButFirst: self class prefix size) trimBoth ]
+	(self argument beginsWith: self class consoleCommandName)
+		ifTrue: [ arguments := Array with: (self argument allButFirst: self class consoleCommandName size) trimBoth ]
 	
 ]

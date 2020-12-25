@@ -4,7 +4,7 @@ I am NeoConsoleMetric. I represent a named metric with a description. I evaluate
 My class side holds a list of #knownMetrics.
 "
 Class {
-	#name : #NeoConsoleMetric,
+	#name : #ConsoleMetric,
 	#superclass : #Object,
 	#instVars : [
 		'name',
@@ -18,19 +18,19 @@ Class {
 }
 
 { #category : #accessing }
-NeoConsoleMetric class >> add: metric [
+ConsoleMetric class >> add: metric [
 	^ self knownMetrics 
 		removeAllSuchThat: [ :each | each name = metric name ]; 
 		add: metric
 ]
 
 { #category : #accessing }
-NeoConsoleMetric class >> addNamed: metricName description: description reader: valueable [
+ConsoleMetric class >> addNamed: metricName description: description reader: valueable [
 	^ self add: (self named: metricName description: description reader: valueable)
 ]
 
 { #category : #initialization }
-NeoConsoleMetric class >> initialize [
+ConsoleMetric class >> initialize [
 	"self initialize"
 	
 	KnownMetrics := nil.
@@ -40,7 +40,7 @@ NeoConsoleMetric class >> initialize [
 ]
 
 { #category : #initialization }
-NeoConsoleMetric class >> initializeChronologyMetrics [
+ConsoleMetric class >> initializeChronologyMetrics [
 	self addNamed: 'system.uptime' 
 		description: 'Image uptime human readeable' 
 		reader: [ (self sessionAge roundTo: 1 minute) humanReadablePrintString ].	
@@ -59,7 +59,7 @@ NeoConsoleMetric class >> initializeChronologyMetrics [
 ]
 
 { #category : #initialization }
-NeoConsoleMetric class >> initializeMemoryMetrics [
+ConsoleMetric class >> initializeMemoryMetrics [
 	self addNamed: 'memory.total' 
 		description: 'Total allocated memory' 
 		reader: [ self memoryTotal ].
@@ -72,7 +72,7 @@ NeoConsoleMetric class >> initializeMemoryMetrics [
 ]
 
 { #category : #initialization }
-NeoConsoleMetric class >> initializeMetrics [
+ConsoleMetric class >> initializeMetrics [
 	self initializeSystemStatusMetric.
 	self initializeMemoryMetrics.
 	self initializeChronologyMetrics.
@@ -81,7 +81,7 @@ NeoConsoleMetric class >> initializeMetrics [
 ]
 
 { #category : #initialization }
-NeoConsoleMetric class >> initializeProcessMetrics [
+ConsoleMetric class >> initializeProcessMetrics [
 	self addNamed: 'process.count' 
 		description: 'Current process count' 
 		reader: [ (Process allSubInstances reject: #isTerminated) size asString ].
@@ -91,7 +91,7 @@ NeoConsoleMetric class >> initializeProcessMetrics [
 ]
 
 { #category : #initialization }
-NeoConsoleMetric class >> initializeSystemStatusMetric [
+ConsoleMetric class >> initializeSystemStatusMetric [
 	self addNamed: 'system.status' 
 		description: 'Simple system status' 
 		reader: [
@@ -102,7 +102,7 @@ NeoConsoleMetric class >> initializeSystemStatusMetric [
 ]
 
 { #category : #initialization }
-NeoConsoleMetric class >> initializeVersionMetrics [
+ConsoleMetric class >> initializeVersionMetrics [
 	self addNamed: 'system.version' 
 		description: 'Image version info' 
 		reader: [ SystemVersion current ].
@@ -112,34 +112,34 @@ NeoConsoleMetric class >> initializeVersionMetrics [
 ]
 
 { #category : #accessing }
-NeoConsoleMetric class >> knownMetrics [
+ConsoleMetric class >> knownMetrics [
 	^ KnownMetrics ifNil: [ KnownMetrics := OrderedCollection new ]
 ]
 
 { #category : #accessing }
-NeoConsoleMetric class >> matching: pattern [
+ConsoleMetric class >> matching: pattern [
 	| patternToSearchFor |
 	patternToSearchFor := (pattern includes: $*) ifTrue: [ pattern ] ifFalse: [ '*' , pattern , '*' ]. 
 	^ self knownMetrics select: [ :each | patternToSearchFor match: each name ]
 ]
 
 { #category : #private }
-NeoConsoleMetric class >> memoryFree [
+ConsoleMetric class >> memoryFree [
 	^ self memoryTotal - Smalltalk vm youngSpaceEnd
 ]
 
 { #category : #private }
-NeoConsoleMetric class >> memoryTotal [
+ConsoleMetric class >> memoryTotal [
 	^ Smalltalk vm memoryEnd
 ]
 
 { #category : #accessing }
-NeoConsoleMetric class >> named: metricName [
+ConsoleMetric class >> named: metricName [
 	^ self knownMetrics detect: [ :each | each name = metricName ] ifNone: [ NotFound signalFor: metricName ]
 ]
 
 { #category : #'instance creation' }
-NeoConsoleMetric class >> named: metricName description: description reader: valueable [
+ConsoleMetric class >> named: metricName description: description reader: valueable [
 	^ self new
 		name: metricName;
 		description: description;
@@ -148,14 +148,14 @@ NeoConsoleMetric class >> named: metricName description: description reader: val
 ]
 
 { #category : #private }
-NeoConsoleMetric class >> sessionAge [
-	^ (Smalltalk includesKey: #Session)
-		ifTrue: [ (Smalltalk at: #Session) current age ]
-		ifFalse: [ DateAndTime now - (Smalltalk at: #SessionManager) default currentSession creationTime ]
+ConsoleMetric class >> sessionAge [
+	^ (Smalltalk globals includesKey: #Session)
+		ifTrue: [ (Smalltalk globals at: #Session) current age ]
+		ifFalse: [ DateAndTime now - (Smalltalk globals at: #SessionManager) default currentSession creationTime ]
 ]
 
 { #category : #'system startup' }
-NeoConsoleMetric class >> startUp [
+ConsoleMetric class >> startUp [
 	"This message is sent to registered classes when the system is coming up."
 	
 	self initialize 
@@ -163,42 +163,42 @@ NeoConsoleMetric class >> startUp [
 ]
 
 { #category : #accessing }
-NeoConsoleMetric >> description [
+ConsoleMetric >> description [
 	^ description
 ]
 
 { #category : #accessing }
-NeoConsoleMetric >> description: string [
+ConsoleMetric >> description: string [
 	description := string
 ]
 
 { #category : #accessing }
-NeoConsoleMetric >> name [
+ConsoleMetric >> name [
 	^ name
 ]
 
 { #category : #accessing }
-NeoConsoleMetric >> name: string [
+ConsoleMetric >> name: string [
 	name := string
 ]
 
 { #category : #printing }
-NeoConsoleMetric >> printOn: stream [
+ConsoleMetric >> printOn: stream [
 	super printOn: stream.
 	stream nextPut: $(; << name; nextPut: $)
 ]
 
 { #category : #accessing }
-NeoConsoleMetric >> reader [
+ConsoleMetric >> reader [
 	^ reader
 ]
 
 { #category : #accessing }
-NeoConsoleMetric >> reader: aValuable [
+ConsoleMetric >> reader: aValuable [
 	reader := aValuable
 ]
 
 { #category : #accessing }
-NeoConsoleMetric >> value [
+ConsoleMetric >> value [
 	^ reader value
 ]

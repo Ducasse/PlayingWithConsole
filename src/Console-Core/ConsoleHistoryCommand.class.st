@@ -11,23 +11,23 @@ history last - execute the last input again
 history ! - execute the last input again
 "
 Class {
-	#name : #NeoConsoleHistoryCommand,
-	#superclass : #NeoConsoleCommand,
+	#name : #ConsoleHistoryCommand,
+	#superclass : #ConsoleCommand,
 	#category : #'Console-Core'
 }
 
+{ #category : #accessing }
+ConsoleHistoryCommand class >> defaultName [
+	^ 'History'
+]
+
 { #category : #testing }
-NeoConsoleHistoryCommand class >> handlesLine: line [
+ConsoleHistoryCommand class >> handlesLine: line [
 	^ line first = $! or: [ super handlesLine: line ]
 ]
 
-{ #category : #accessing }
-NeoConsoleHistoryCommand class >> prefix [
-	^ 'history'
-]
-
 { #category : #public }
-NeoConsoleHistoryCommand >> execute [
+ConsoleHistoryCommand >> execute [
 	self hasArguments
 		ifTrue: [
 			self argument = 'all' 
@@ -42,11 +42,11 @@ NeoConsoleHistoryCommand >> execute [
 ]
 
 { #category : #private }
-NeoConsoleHistoryCommand >> executeHistoryAt: index [
+ConsoleHistoryCommand >> executeHistoryAt: index [
 	| input evalCommand |
 	[ 
-	input := NeoConsole history at: index.
-	evalCommand := NeoConsoleEvalCommand new on: input.
+	input := Console history at: index.
+	evalCommand := ConsoleEvalCommand new on: input.
 	evalCommand execute.
 	result := input , String cr , String cr , evalCommand result ]
 		on: SubscriptOutOfBounds
@@ -54,42 +54,42 @@ NeoConsoleHistoryCommand >> executeHistoryAt: index [
 ]
 
 { #category : #private }
-NeoConsoleHistoryCommand >> executeHistoryLast [
+ConsoleHistoryCommand >> executeHistoryLast [
 	| size |
-	size := NeoConsole history size.
+	size := Console history size.
 	size isZero 
 		ifTrue: [ result := 'history is empty' ]
 		ifFalse: [ self executeHistoryAt: size ]
 ]
 
 { #category : #private }
-NeoConsoleHistoryCommand >> history [
+ConsoleHistoryCommand >> history [
 	result := String streamContents: [ :out |
-		1 to: NeoConsole history size do: [ :each |
-			out print: each; << ': '; << (NeoConsole history at: each); cr ] ]
+		1 to: Console history size do: [ :each |
+			out print: each; << ': '; << (Console history at: each); cr ] ]
 ]
 
 { #category : #private }
-NeoConsoleHistoryCommand >> historyClear [
-	NeoConsole history removeAll.
+ConsoleHistoryCommand >> historyClear [
+	Console history removeAll.
 	result := 'history cleared'
 ]
 
 { #category : #private }
-NeoConsoleHistoryCommand >> historySummary [
+ConsoleHistoryCommand >> historySummary [
 	result := String streamContents: [ :out | | size |
-		size := NeoConsole history size.
+		size := Console history size.
 		(1 max: (size - self historySummarySize)) to: size do: [ :each |
-			out print: each; << ': '; << (NeoConsole history at: each); cr ] ]
+			out print: each; << ': '; << (Console history at: each); cr ] ]
 ]
 
 { #category : #accessing }
-NeoConsoleHistoryCommand >> historySummarySize [
+ConsoleHistoryCommand >> historySummarySize [
 	^ 10
 ]
 
 { #category : #'initialization-release' }
-NeoConsoleHistoryCommand >> on: input [
+ConsoleHistoryCommand >> on: input [
 	super on: input.
 	self argument first = $!
 		ifTrue: [ 

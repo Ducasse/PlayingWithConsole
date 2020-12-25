@@ -8,18 +8,18 @@ End with quit or an empty line.
 Security warning: this service opens up your image for access to those with access to your local network (i.e. those logged in to your machine), without any further authenication, allowing them to do absolutely anything. Think and make sure that you know what you are doing.
 "
 Class {
-	#name : #NeoConsoleStdio,
+	#name : #ConsoleStdio,
 	#superclass : #Object,
 	#category : #'Console-Core'
 }
 
 { #category : #public }
-NeoConsoleStdio class >> run [
+ConsoleStdio class >> run [
 	^ self new run
 ]
 
 { #category : #protocol }
-NeoConsoleStdio >> executeRequestResponseLoop [
+ConsoleStdio >> executeRequestResponseLoop [
 	| in out command executeResult |
 	in := ZnCharacterReadStream on: FileStream stdin binary.
 	out := ZnCharacterWriteStream on: Stdio stdout.
@@ -35,12 +35,12 @@ NeoConsoleStdio >> executeRequestResponseLoop [
 ]
 
 { #category : #protocol }
-NeoConsoleStdio >> readInputFrom: stream [
+ConsoleStdio >> readInputFrom: stream [
 	| input lineReader line commandClass |
 	lineReader := ZnFastLineReader on: stream.
 	line := [ lineReader nextLine trimBoth ] on: ConnectionClosed, ConnectionTimedOut do: [ nil ].
-	line isEmptyOrNil ifTrue: [ ^ NeoConsoleQuitCommand new ].
-	commandClass := NeoConsoleCommand forLine: line.
+	line isEmptyOrNil ifTrue: [ ^ ConsoleQuitCommand new ].
+	commandClass := ConsoleCommand forLine: line.
 	commandClass isSingleLine
 		ifTrue: [ ^ commandClass new on: line; yourself ].
 	input := String new writeStream.
@@ -53,18 +53,18 @@ NeoConsoleStdio >> readInputFrom: stream [
 ]
 
 { #category : #public }
-NeoConsoleStdio >> run [
+ConsoleStdio >> run [
 	self executeRequestResponseLoop 
 
 ]
 
 { #category : #protocol }
-NeoConsoleStdio >> writeLine: string to: stream [
+ConsoleStdio >> writeLine: string to: stream [
 	stream nextPutAll: string; lf "; flush"
 ]
 
 { #category : #protocol }
-NeoConsoleStdio >> writeOutput: string to: stream [
+ConsoleStdio >> writeOutput: string to: stream [
 	string lines
 		do: [ :each | stream nextPutAll: each ]
 		separatedBy: [ stream lf ].

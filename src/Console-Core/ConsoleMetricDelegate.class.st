@@ -13,13 +13,13 @@ To list all metrics GET /metrics
 
 "
 Class {
-	#name : #NeoConsoleMetricDelegate,
+	#name : #ConsoleMetricDelegate,
 	#superclass : #Object,
 	#category : #'Console-Core'
 }
 
 { #category : #public }
-NeoConsoleMetricDelegate class >> startOn: port [
+ConsoleMetricDelegate class >> startOn: port [
 	"self startOn: 1707"
 	
 	^ (ZnServer on: port)
@@ -31,7 +31,7 @@ NeoConsoleMetricDelegate class >> startOn: port [
 ]
 
 { #category : #public }
-NeoConsoleMetricDelegate >> handleRequest: request [
+ConsoleMetricDelegate >> handleRequest: request [
 	((#(GET HEAD) includes: request method) and: [ request uri firstPathSegment = #metrics ])
 		ifFalse: [ ^ ZnResponse notFound: request uri ].
 	request uri pathSegments size = 1
@@ -42,7 +42,7 @@ NeoConsoleMetricDelegate >> handleRequest: request [
 ]
 
 { #category : #private }
-NeoConsoleMetricDelegate >> okResponse: text [
+ConsoleMetricDelegate >> okResponse: text [
 	| output |
 	output := String new: text size + 10 streamContents: [ :out |
 		text lines do: [ :each | out << each ] separatedBy: [ out lf ].
@@ -51,16 +51,16 @@ NeoConsoleMetricDelegate >> okResponse: text [
 ]
 
 { #category : #private }
-NeoConsoleMetricDelegate >> responseForKnowMetrics [
+ConsoleMetricDelegate >> responseForKnowMetrics [
 	| text |
-	text := String cr join: (NeoConsoleMetric knownMetrics collect: [ :each |
+	text := String cr join: (ConsoleMetric knownMetrics collect: [ :each |
 		'/metrics/' , each name, ' - ', each description ]).
 	^ self okResponse: text
 ]
 
 { #category : #private }
-NeoConsoleMetricDelegate >> responseForMetricNamed: metricName [
+ConsoleMetricDelegate >> responseForMetricNamed: metricName [
 	| metric |
-	metric := NeoConsoleMetric named: metricName.
+	metric := ConsoleMetric named: metricName.
 	^ self okResponse: metric value asString
 ]
