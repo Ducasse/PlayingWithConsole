@@ -21,10 +21,9 @@ ConsoleStdio class >> run [
 
 { #category : #protocol }
 ConsoleStdio >> executeRequestResponseLoop [
-	| in out command executeResult |
-	in := ZnCharacterReadStream on: Stdio stdin binary.
-	out := ZnCharacterWriteStream on: Stdio stdout.
-	self writeLine: ('Console ', SystemVersion current asString) to: out.
+	| command executeResult |
+	self initializeInOut.
+	self sayHello.
 	[
 		out nextPutAll: self promptString.
 		command := (self readInputFrom: in).
@@ -35,21 +34,15 @@ ConsoleStdio >> executeRequestResponseLoop [
 		executeResult notNil	] whileTrue
 ]
 
+{ #category : #protocol }
+ConsoleStdio >> initializeInOut [
+	
+	in := ZnCharacterReadStream on: Stdio stdin binary.
+	out := ZnCharacterWriteStream on: Stdio stdout.
+]
+
 { #category : #public }
 ConsoleStdio >> run [
 	self executeRequestResponseLoop 
 
-]
-
-{ #category : #protocol }
-ConsoleStdio >> writeLine: string to: stream [
-	stream nextPutAll: string; lf "; flush"
-]
-
-{ #category : #protocol }
-ConsoleStdio >> writeOutput: string to: stream [
-	string lines
-		do: [ :each | stream nextPutAll: each ]
-		separatedBy: [ stream lf ].
-	stream lf "; flush"
 ]

@@ -39,10 +39,10 @@ ConsoleTelnetServer class >> startOn: port [
 { #category : #protocol }
 ConsoleTelnetServer >> executeRequestResponseLoopOn: stream [
 
-	| in out command executeResult |
+	| command executeResult |
 	in := ZnCharacterReadStream on: stream.
 	out := ZnCharacterWriteStream on: stream.
-	self writeLine: ('Console ', SystemVersion current asString) to: out.
+	self sayHello.
 	[
 		stream nextPutAll: self promptString; flush.
 		command := (self readInputFrom: in).

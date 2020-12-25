@@ -1,8 +1,17 @@
 Class {
 	#name : #ConsoleLogic,
 	#superclass : #Object,
+	#instVars : [
+		'out',
+		'in'
+	],
 	#category : #'Console-Core'
 }
+
+{ #category : #protocol }
+ConsoleLogic >> commandClassForLine: line [
+	^ ConsoleCommand forLine: line
+]
 
 { #category : #protocol }
 ConsoleLogic >> exceptionClasses [ 
@@ -22,7 +31,7 @@ ConsoleLogic >> readInputFrom: stream [
 	lineReader := ZnFastLineReader on: stream.
 	line := [ lineReader nextLine trimBoth ] on: self exceptionClasses do: [ nil ].
 	line isEmptyOrNil ifTrue: [ ^ ConsoleQuitCommand new ].
-	commandClass := ConsoleCommand forLine: line.
+	commandClass := self commandClassForLine: line.
 	commandClass isSingleLine
 		ifTrue: [ ^ commandClass new on: line; yourself ].
 	input := String new writeStream.
@@ -32,6 +41,11 @@ ConsoleLogic >> readInputFrom: stream [
 		input nextPutAll: line; cr.
 		line isEmpty ] whileFalse.
 	^ commandClass new on: input contents; yourself
+]
+
+{ #category : #protocol }
+ConsoleLogic >> sayHello [
+	self writeLine: ('Console ', SystemVersion current asString) to: out
 ]
 
 { #category : #protocol }
