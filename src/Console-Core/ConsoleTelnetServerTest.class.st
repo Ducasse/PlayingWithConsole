@@ -29,13 +29,14 @@ ConsoleTelnetServerTest >> setUp [
 
 { #category : #running }
 ConsoleTelnetServerTest >> tearDown [
+	out nextPutAll: 'quit'; lf; flush.
+	connection close.
 	server stop.
 	super tearDown 
 ]
 
 { #category : #testing }
 ConsoleTelnetServerTest >> testConnect [
-
 	| line |
 	line := in nextLine.
 	self assert: (line includesSubstring: 'Console').
@@ -44,7 +45,6 @@ ConsoleTelnetServerTest >> testConnect [
 	out nextPutAll: 'quit'; lf; flush.
 	line := in nextLine.
 	self assert: line equals: '> Bye!'.
-	connection close
 ]
 
 { #category : #testing }
@@ -59,8 +59,7 @@ ConsoleTelnetServerTest >> testEvalSum [
 	out nextPutAll: ('eval {1} + {2}' format: { x. y }); lf; lf; flush.
 	line := in nextLine.
 	self assert: (line allButFirst: 2) asNumber equals: x + y.
-	out nextPutAll: 'quit'; lf; flush.
-	connection close
+	
 ]
 
 { #category : #testing }
@@ -71,8 +70,18 @@ ConsoleTelnetServerTest >> testGetSystemTimestamp [
 	out nextPutAll: 'get system.timestamp'; lf; flush.
 	line := in nextLine.
 	self assert: DateAndTime now - (DateAndTime fromString: line) < 5 seconds.
-	out nextPutAll: 'quit'; lf; flush.
-	connection close
+	
+]
+
+{ #category : #testing }
+ConsoleTelnetServerTest >> testHeaderAndPrompt [
+
+	| line |
+	line := in nextLine.
+	self assert: (line includesSubstring: 'Console').
+	line := in next: 7.
+	self assert: line equals: 'pharo>>'.
+	
 ]
 
 { #category : #testing }
@@ -87,6 +96,5 @@ ConsoleTelnetServerTest >> testSumMultiline [
 	out print: x; lf; nextPut: $+; lf; print: y; lf; lf; flush.
 	line := in nextLine.
 	self assert: (line allButFirst: 2) asNumber equals: x + y.
-	out nextPutAll: 'quit'; lf; flush.
-	connection close
+
 ]
