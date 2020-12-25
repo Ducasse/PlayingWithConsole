@@ -37,12 +37,6 @@ ConsoleTelnetServer class >> startOn: port [
 ]
 
 { #category : #protocol }
-ConsoleTelnetServer >> exceptionClasses [ 
-
-	^ ConnectionClosed, ConnectionTimedOut 
-]
-
-{ #category : #protocol }
 ConsoleTelnetServer >> executeRequestResponseLoopOn: stream [
 
 	| in out command executeResult |
@@ -125,7 +119,7 @@ ConsoleTelnetServer >> readInputFrom: stream [
 	input := String new writeStream.
 	input nextPutAll: line; cr.
 	[ 
-		line := [ lineReader nextLine trimBoth ] on: ConnectionClosed, ConnectionTimedOut do: [ '' ].
+		line := [ lineReader nextLine trimBoth ] on: self exceptionClasses do: [ '' ].
 		input nextPutAll: line; cr.
 		line isEmpty ] whileFalse.
 	^ commandClass new on: input contents; yourself

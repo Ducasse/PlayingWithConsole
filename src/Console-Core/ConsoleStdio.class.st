@@ -1,15 +1,16 @@
 "
-NeoConsoleStdio offers a command line interface to a Pharo image over Stdio.
+ConsoleStdio offers a command line interface to a Pharo image over Stdio.
 
-  $ ./pharo Pharo.image NeoConsoleStdio run
-
+```
+  $ ./pharo Pharo.image ConsoleStdio run
+```
 End with quit or an empty line.
 
 Security warning: this service opens up your image for access to those with access to your local network (i.e. those logged in to your machine), without any further authenication, allowing them to do absolutely anything. Think and make sure that you know what you are doing.
 "
 Class {
 	#name : #ConsoleStdio,
-	#superclass : #Object,
+	#superclass : #ConsoleLogic,
 	#category : #'Console-Core'
 }
 
@@ -21,9 +22,9 @@ ConsoleStdio class >> run [
 { #category : #protocol }
 ConsoleStdio >> executeRequestResponseLoop [
 	| in out command executeResult |
-	in := ZnCharacterReadStream on: FileStream stdin binary.
+	in := ZnCharacterReadStream on: Stdio stdin binary.
 	out := ZnCharacterWriteStream on: Stdio stdout.
-	self writeLine: ('Neo Console ', SystemVersion current asString) to: out.
+	self writeLine: ('Console ', SystemVersion current asString) to: out.
 	[
 		out nextPutAll: 'pharo> ' "; flush".
 		command := (self readInputFrom: in).
@@ -38,7 +39,7 @@ ConsoleStdio >> executeRequestResponseLoop [
 ConsoleStdio >> readInputFrom: stream [
 	| input lineReader line commandClass |
 	lineReader := ZnFastLineReader on: stream.
-	line := [ lineReader nextLine trimBoth ] on: ConnectionClosed, ConnectionTimedOut do: [ nil ].
+	line := [ lineReader nextLine trimBoth ] on: self exceptionClasses do: [ nil ].
 	line isEmptyOrNil ifTrue: [ ^ ConsoleQuitCommand new ].
 	commandClass := ConsoleCommand forLine: line.
 	commandClass isSingleLine
@@ -46,7 +47,7 @@ ConsoleStdio >> readInputFrom: stream [
 	input := String new writeStream.
 	input nextPutAll: line; cr.
 	[ 
-		line := [ lineReader nextLine trimBoth ] on: ConnectionClosed, ConnectionTimedOut do: [ '' ].
+		line := [ lineReader nextLine trimBoth ] on: self exceptionClasses do: [ '' ].
 		input nextPutAll: line; cr.
 		line isEmpty ] whileFalse.
 	^ commandClass new on: input contents; yourself

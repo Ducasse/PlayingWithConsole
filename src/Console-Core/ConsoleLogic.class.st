@@ -5,6 +5,12 @@ Class {
 }
 
 { #category : #protocol }
+ConsoleLogic >> exceptionClasses [ 
+
+	^ ConnectionClosed, ConnectionTimedOut 
+]
+
+{ #category : #protocol }
 ConsoleLogic >> writeLine: string to: stream [
 	stream nextPutAll: string; lf; flush
 ]
