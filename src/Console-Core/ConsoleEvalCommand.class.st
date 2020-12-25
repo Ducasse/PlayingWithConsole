@@ -45,9 +45,9 @@ ConsoleEvalCommand >> execute [
 		streamContents: [ :out | 
 			[ 	| compiler evaluationResult |
 				compiler := self class compiler.
-				Console history add: self argument.
+				ConsoleTelnet history add: self argument.
 				evaluationResult := compiler evaluate: self argument.
-				Console lastResult: evaluationResult. 
+				ConsoleTelnet lastResult: evaluationResult. 
 				out print: evaluationResult ]
 					on: Error , SyntaxErrorNotification 
 					do: [ :exception | self logException: exception on: out ] ]

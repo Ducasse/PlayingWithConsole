@@ -18,7 +18,7 @@ Security warning: this service opens up your image for access to those with acce
 "
 Class {
 	#name : #ConsoleTelnetServer,
-	#superclass : #Object,
+	#superclass : #ConsoleLogic,
 	#instVars : [
 		'port',
 		'process',
@@ -34,6 +34,12 @@ ConsoleTelnetServer class >> startOn: port [
 	^ self new
 		port: port;
 		start
+]
+
+{ #category : #protocol }
+ConsoleTelnetServer >> exceptionClasses [ 
+
+	^ ConnectionClosed, ConnectionTimedOut 
 ]
 
 { #category : #protocol }
@@ -111,7 +117,7 @@ ConsoleTelnetServer >> printOn: stream [
 ConsoleTelnetServer >> readInputFrom: stream [
 	| input lineReader line commandClass |
 	lineReader := ZnFastLineReader on: stream.
-	line := [ lineReader nextLine trimBoth ] on: ConnectionClosed, ConnectionTimedOut do: [ nil ].
+	line := [ lineReader nextLine trimBoth ] on: self exceptionClasses do: [ nil ].
 	line isEmptyOrNil ifTrue: [ ^ ConsoleQuitCommand new ].
 	commandClass := ConsoleCommand forLine: line.
 	commandClass isSingleLine
@@ -187,17 +193,4 @@ ConsoleTelnetServer >> timeout [
 { #category : #accessing }
 ConsoleTelnetServer >> workerProcessName [
 	^ self serverProcessName, ' Connection Handler'
-]
-
-{ #category : #protocol }
-ConsoleTelnetServer >> writeLine: string to: stream [
-	stream nextPutAll: string; lf; flush
-]
-
-{ #category : #protocol }
-ConsoleTelnetServer >> writeOutput: string to: stream [
-	string lines
-		do: [ :each | stream nextPutAll: each ]
-		separatedBy: [ stream lf ].
-	stream lf; flush
 ]

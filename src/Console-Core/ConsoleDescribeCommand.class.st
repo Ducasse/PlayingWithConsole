@@ -36,7 +36,7 @@ ConsoleDescribeCommand class >> handlesLine: line [
 { #category : #public }
 ConsoleDescribeCommand >> execute [
 	| object |
-	object := Console last.
+	object := ConsoleTelnet last.
 	result := String streamContents: [ :out |
 		out << 'self: '; << (self printLimited: [ object ]); cr.
 		out << 'class: '; << object class name; cr.

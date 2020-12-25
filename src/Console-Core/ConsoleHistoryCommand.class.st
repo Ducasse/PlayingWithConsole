@@ -45,7 +45,7 @@ ConsoleHistoryCommand >> execute [
 ConsoleHistoryCommand >> executeHistoryAt: index [
 	| input evalCommand |
 	[ 
-	input := Console history at: index.
+	input := ConsoleTelnet history at: index.
 	evalCommand := ConsoleEvalCommand new on: input.
 	evalCommand execute.
 	result := input , String cr , String cr , evalCommand result ]
@@ -56,7 +56,7 @@ ConsoleHistoryCommand >> executeHistoryAt: index [
 { #category : #private }
 ConsoleHistoryCommand >> executeHistoryLast [
 	| size |
-	size := Console history size.
+	size := ConsoleTelnet history size.
 	size isZero 
 		ifTrue: [ result := 'history is empty' ]
 		ifFalse: [ self executeHistoryAt: size ]
@@ -65,22 +65,22 @@ ConsoleHistoryCommand >> executeHistoryLast [
 { #category : #private }
 ConsoleHistoryCommand >> history [
 	result := String streamContents: [ :out |
-		1 to: Console history size do: [ :each |
-			out print: each; << ': '; << (Console history at: each); cr ] ]
+		1 to: ConsoleTelnet history size do: [ :each |
+			out print: each; << ': '; << (ConsoleTelnet history at: each); cr ] ]
 ]
 
 { #category : #private }
 ConsoleHistoryCommand >> historyClear [
-	Console history removeAll.
+	ConsoleTelnet history removeAll.
 	result := 'history cleared'
 ]
 
 { #category : #private }
 ConsoleHistoryCommand >> historySummary [
 	result := String streamContents: [ :out | | size |
-		size := Console history size.
+		size := ConsoleTelnet history size.
 		(1 max: (size - self historySummarySize)) to: size do: [ :each |
-			out print: each; << ': '; << (Console history at: each); cr ] ]
+			out print: each; << ': '; << (ConsoleTelnet history at: each); cr ] ]
 ]
 
 { #category : #accessing }

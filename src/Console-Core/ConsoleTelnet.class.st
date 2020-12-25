@@ -1,14 +1,14 @@
 "
-I am a class facade offering access to some global state held by the NeoConsole package.
+I am a class facade offering access to some global state held by the Console package.
 
 I hold the history of all evaluated commands.
 
 I hold the last 3 results.
 
-I offer quick access to NeoConsoleEnvironment current.
+I offer quick access to ConsoleEnvironment current.
 "
 Class {
-	#name : #Console,
+	#name : #ConsoleTelnet,
 	#superclass : #Object,
 	#classVars : [
 		'History',
@@ -18,29 +18,29 @@ Class {
 }
 
 { #category : #accessing }
-Console class >> clearResults [
+ConsoleTelnet class >> clearResults [
 	^ self results 
 		atAllPut: nil; 
 		yourself
 ]
 
 { #category : #accessing }
-Console class >> env [
+ConsoleTelnet class >> env [
 	^ ConsoleEnvironment current
 ]
 
 { #category : #accessing }
-Console class >> history [
+ConsoleTelnet class >> history [
 	^ History ifNil: [ History := OrderedCollection new ]
 ]
 
 { #category : #accessing }
-Console class >> last [
+ConsoleTelnet class >> last [
 	^ self results last
 ]
 
 { #category : #accessing }
-Console class >> lastResult: anObject [
+ConsoleTelnet class >> lastResult: anObject [
 	| results |
 	results := self results.
 	anObject = results ifTrue: [ ^ results ].
@@ -51,16 +51,16 @@ Console class >> lastResult: anObject [
 ]
 
 { #category : #accessing }
-Console class >> results [
+ConsoleTelnet class >> results [
 	^ Results ifNil: [ Results := Array new: 3 ]
 ]
 
 { #category : #server }
-Console class >> startServer [
+ConsoleTelnet class >> startServer [
 	^ ConsoleTelnetServer new start
 ]
 
 { #category : #server }
-Console class >> startServerOn: port [
+ConsoleTelnet class >> startServerOn: port [
 	^ ConsoleTelnetServer startOn: port
 ]

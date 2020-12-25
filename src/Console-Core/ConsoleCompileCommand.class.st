@@ -52,7 +52,7 @@ ConsoleCompileCommand >> execute [
 		streamContents: [ :out | 
 			[ | compileResult |
 			compileResult := targetClass compile: source.
-			Console lastResult: compileResult.
+			ConsoleTelnet lastResult: compileResult.
 			out print: compileResult ]
 				on: Error , SyntaxErrorNotification
 				do: [ :exception | self logException: exception on: out ] ]
