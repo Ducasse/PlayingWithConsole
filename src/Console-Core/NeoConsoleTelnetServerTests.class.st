@@ -18,7 +18,7 @@ NeoConsoleTelnetServerTests >> localhost [
 { #category : #running }
 NeoConsoleTelnetServerTests >> setUp [ 
 	super setUp.
-	server := NeoConsoleTelnetServer new start
+	server := ConsoleTelnetServer new start
 ]
 
 { #category : #running }

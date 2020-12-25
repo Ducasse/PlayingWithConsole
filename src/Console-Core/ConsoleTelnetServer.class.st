@@ -1,20 +1,23 @@
 "
-NeoConsoleTelnetServer offers a command line interface to a Pharo image over a network connection.
+ConsoleTelnetServer offers a command line interface to a Pharo image over a network connection.
 
 Inspect:
-
-  NeoConsoleTelnetServer new start.
+```
+  ConsoleTelnetServer new start.
+```
 
 In a terminal do:
 
+```
   $ telnet localhost 4999
+```
 
 End with quit or an empty line.
 
 Security warning: this service opens up your image for access to those with access to your local network (i.e. those logged in to your machine), without any further authenication, allowing them to do absolutely anything. Think and make sure that you know what you are doing.
 "
 Class {
-	#name : #NeoConsoleTelnetServer,
+	#name : #ConsoleTelnetServer,
 	#superclass : #Object,
 	#instVars : [
 		'port',
@@ -25,7 +28,7 @@ Class {
 }
 
 { #category : #public }
-NeoConsoleTelnetServer class >> startOn: port [
+ConsoleTelnetServer class >> startOn: port [
 	"self startOn: 4999"
 	
 	^ self new
@@ -34,13 +37,14 @@ NeoConsoleTelnetServer class >> startOn: port [
 ]
 
 { #category : #protocol }
-NeoConsoleTelnetServer >> executeRequestResponseLoopOn: stream [
+ConsoleTelnetServer >> executeRequestResponseLoopOn: stream [
+
 	| in out command executeResult |
 	in := ZnCharacterReadStream on: stream.
 	out := ZnCharacterWriteStream on: stream.
 	self writeLine: ('Neo Console ', SystemVersion current asString) to: out.
 	[
-		stream nextPutAll: 'pharo> '; flush.
+		stream nextPutAll: 'pharo>>> '; flush.
 		command := (self readInputFrom: in).
 		executeResult := [ command execute ] 
 			on: Error 
@@ -50,7 +54,7 @@ NeoConsoleTelnetServer >> executeRequestResponseLoopOn: stream [
 ]
 
 { #category : #private }
-NeoConsoleTelnetServer >> initializeServerSocket [
+ConsoleTelnetServer >> initializeServerSocket [
 	serverSocket := Socket newTCP.
 	serverSocket setOption: 'TCP_NODELAY' value: 1.
 	serverSocket 
@@ -62,14 +66,14 @@ NeoConsoleTelnetServer >> initializeServerSocket [
 ]
 
 { #category : #testing }
-NeoConsoleTelnetServer >> isRunning [
+ConsoleTelnetServer >> isRunning [
 	"Return true when I am running"
 	
 	^ process notNil and: [ serverSocket notNil ]
 ]
 
 { #category : #protocol }
-NeoConsoleTelnetServer >> listenLoop [
+ConsoleTelnetServer >> listenLoop [
 	"We create a listening Socket, then wait for a connection.
 	After each connection we also check that the listening Socket is still valid 
 	- if not we just make a recursive call to this method to start over."
@@ -86,17 +90,17 @@ NeoConsoleTelnetServer >> listenLoop [
 ]
 
 { #category : #accessing }
-NeoConsoleTelnetServer >> port [
+ConsoleTelnetServer >> port [
 	^ port ifNil: [ port := 4999 ]
 ]
 
 { #category : #accessing }
-NeoConsoleTelnetServer >> port: integer [
+ConsoleTelnetServer >> port: integer [
 	port := integer
 ]
 
 { #category : #printing }
-NeoConsoleTelnetServer >> printOn: stream [
+ConsoleTelnetServer >> printOn: stream [
 	super printOn: stream.
 	stream << $(.
 	self isRunning ifTrue: [ stream << #running; space; print: self port ].
@@ -104,7 +108,7 @@ NeoConsoleTelnetServer >> printOn: stream [
 ]
 
 { #category : #protocol }
-NeoConsoleTelnetServer >> readInputFrom: stream [
+ConsoleTelnetServer >> readInputFrom: stream [
 	| input lineReader line commandClass |
 	lineReader := ZnFastLineReader on: stream.
 	line := [ lineReader nextLine trimBoth ] on: ConnectionClosed, ConnectionTimedOut do: [ nil ].
@@ -122,14 +126,14 @@ NeoConsoleTelnetServer >> readInputFrom: stream [
 ]
 
 { #category : #private }
-NeoConsoleTelnetServer >> releaseServerSocket [
+ConsoleTelnetServer >> releaseServerSocket [
 	(Delay forMilliseconds: 10) wait.
 	serverSocket destroy.
 	serverSocket := nil
 ]
 
 { #category : #protocol }
-NeoConsoleTelnetServer >> serveConnectionsOn: listeningSocket [
+ConsoleTelnetServer >> serveConnectionsOn: listeningSocket [
 	"We wait up to acceptWaitTimeout seconds for an incoming connection.
 	If we get one we wrap it in a SocketStream and #executeRequestResponseLoopOn: on it"
 		 
@@ -145,12 +149,12 @@ NeoConsoleTelnetServer >> serveConnectionsOn: listeningSocket [
 ]
 
 { #category : #accessing }
-NeoConsoleTelnetServer >> serverProcessName [
+ConsoleTelnetServer >> serverProcessName [
 	^ self class name asString , ' port ' , self port asString
 ]
 
 { #category : #private }
-NeoConsoleTelnetServer >> socketStreamOn: socket [
+ConsoleTelnetServer >> socketStreamOn: socket [
 	^ (ZdcSocketStream on: socket)
 		binary;
 		shouldSignal: true;
@@ -160,7 +164,7 @@ NeoConsoleTelnetServer >> socketStreamOn: socket [
 ]
 
 { #category : #public }
-NeoConsoleTelnetServer >> start [
+ConsoleTelnetServer >> start [
 	self stop.
 	process := [ [ self listenLoop ] repeat ] 
 					forkAt: Processor highIOPriority 
@@ -168,7 +172,7 @@ NeoConsoleTelnetServer >> start [
 ]
 
 { #category : #public }
-NeoConsoleTelnetServer >> stop [
+ConsoleTelnetServer >> stop [
 	self isRunning ifFalse: [ ^ self ].
 	process terminate. 
 	process := nil.
@@ -176,22 +180,22 @@ NeoConsoleTelnetServer >> stop [
 ]
 
 { #category : #accessing }
-NeoConsoleTelnetServer >> timeout [
+ConsoleTelnetServer >> timeout [
 	^ 60
 ]
 
 { #category : #accessing }
-NeoConsoleTelnetServer >> workerProcessName [
+ConsoleTelnetServer >> workerProcessName [
 	^ self serverProcessName, ' Connection Handler'
 ]
 
 { #category : #protocol }
-NeoConsoleTelnetServer >> writeLine: string to: stream [
+ConsoleTelnetServer >> writeLine: string to: stream [
 	stream nextPutAll: string; lf; flush
 ]
 
 { #category : #protocol }
-NeoConsoleTelnetServer >> writeOutput: string to: stream [
+ConsoleTelnetServer >> writeOutput: string to: stream [
 	string lines
 		do: [ :each | stream nextPutAll: each ]
 		separatedBy: [ stream lf ].

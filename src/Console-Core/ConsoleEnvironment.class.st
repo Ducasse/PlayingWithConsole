@@ -1,25 +1,28 @@
 "
-NeoConsoleEnvironment holds a number of configuration key/value pairs and can be used for system configuration during startup. NeoConsoleEnvironment offers a single, central place for configuration.
+`ConsoleEnvironment` holds a number of configuration key/value pairs and can be used for system configuration during startup. `ConsoleEnvironment` offers a single, central place for configuration.
 
 For example, in your run/startup script you could write: 
 
-NeoConsoleEnvironment current
+```
+ConsoleEnvironment current
 	at: #DatabaseUsername put: 'webapp';
 	at: #DatabasePassword put: 'secret'.
-	
+```	
 And use those values when you make a database connection once your application starts up.
 
-You can optionally request to load the key/value of your OS environment using #loadOSEnvironment.
+You can optionally request to load the key/value of your OS environment using `#loadOSEnvironment`.
 
-NeoConsoleEnvironment current
+```
+ConsoleEnvironment current
 	loadOSEnvironment;
 	yourself.
+```
 
 Keys are stored as symbols.
 
 "
 Class {
-	#name : #NeoConsoleEnvironment,
+	#name : #ConsoleEnvironment,
 	#superclass : #Object,
 	#instVars : [
 		'environment'
@@ -31,17 +34,17 @@ Class {
 }
 
 { #category : #accessing }
-NeoConsoleEnvironment class >> current [
+ConsoleEnvironment class >> current [
 	^ UniqueInstance ifNil: [ UniqueInstance := self new ]
 ]
 
 { #category : #accessing }
-NeoConsoleEnvironment class >> default [
+ConsoleEnvironment class >> default [
 	^ self current
 ]
 
 { #category : #accessing }
-NeoConsoleEnvironment >> at: key [
+ConsoleEnvironment >> at: key [
 	"Return my value for key.
 	Signal NotFound if I do not know key."
 	
@@ -49,7 +52,7 @@ NeoConsoleEnvironment >> at: key [
 ]
 
 { #category : #accessing }
-NeoConsoleEnvironment >> at: key ifAbsent: block [
+ConsoleEnvironment >> at: key ifAbsent: block [
 	"Return my value for key.
 	Return the value of evaluating block in case I do not know key."
 	
@@ -57,7 +60,7 @@ NeoConsoleEnvironment >> at: key ifAbsent: block [
 ]
 
 { #category : #accessing }
-NeoConsoleEnvironment >> at: key ifAbsentPut: block [
+ConsoleEnvironment >> at: key ifAbsentPut: block [
 	"Return my value for key.
 	Store and return the value of evaluating block in case I do not know key."
 
@@ -65,7 +68,7 @@ NeoConsoleEnvironment >> at: key ifAbsentPut: block [
 ]
 
 { #category : #accessing }
-NeoConsoleEnvironment >> at: key ifPresent: block [
+ConsoleEnvironment >> at: key ifPresent: block [
 	"Return the value of evaluating block with my value for key.
 	Return self, in effect do nothing, in case I do not know key."
 
@@ -73,7 +76,7 @@ NeoConsoleEnvironment >> at: key ifPresent: block [
 ]
 
 { #category : #accessing }
-NeoConsoleEnvironment >> at: key put: value [
+ConsoleEnvironment >> at: key put: value [
 	"I will store value for key.
 	Return value."
 	
@@ -81,27 +84,29 @@ NeoConsoleEnvironment >> at: key put: value [
 ]
 
 { #category : #testing }
-NeoConsoleEnvironment >> includesKey: key [
+ConsoleEnvironment >> includesKey: key [
 	^ environment includesKey: key
 ]
 
 { #category : #initialization }
-NeoConsoleEnvironment >> initialize [
+ConsoleEnvironment >> initialize [
+	super initialize.
 	environment := Dictionary new
 ]
 
 { #category : #accessing }
-NeoConsoleEnvironment >> keys [
+ConsoleEnvironment >> keys [
 	^ environment keys
 ]
 
 { #category : #enumeration }
-NeoConsoleEnvironment >> keysAndValuesDo: block [
+ConsoleEnvironment >> keysAndValuesDo: block [
 	environment keysAndValuesDo: block
 ]
 
 { #category : #initialization }
-NeoConsoleEnvironment >> loadOSEnvironment [
+ConsoleEnvironment >> loadOSEnvironment [
+
 	OSPlatform current environment 
 		keysAndValuesDo: [ :key :value | 
 			self at: key put: value ]

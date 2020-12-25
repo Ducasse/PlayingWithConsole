@@ -26,7 +26,7 @@ NeoConsole class >> clearResults [
 
 { #category : #accessing }
 NeoConsole class >> env [
-	^ NeoConsoleEnvironment current
+	^ ConsoleEnvironment current
 ]
 
 { #category : #accessing }
@@ -57,10 +57,10 @@ NeoConsole class >> results [
 
 { #category : #server }
 NeoConsole class >> startServer [
-	^ NeoConsoleTelnetServer new start
+	^ ConsoleTelnetServer new start
 ]
 
 { #category : #server }
 NeoConsole class >> startServerOn: port [
-	^ NeoConsoleTelnetServer startOn: port
+	^ ConsoleTelnetServer startOn: port
 ]

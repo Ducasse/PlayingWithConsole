@@ -1,11 +1,12 @@
 "
-I am NeoConsoleTranscript, a NonInteractiveTranscript that writes to a dated file, switching to a new file each day.
+I am ConsoleTranscript, a NonInteractiveTranscript that writes to a dated file, switching to a new file each day.
 
-	(NeoConsoleTranscript onFileNamed: 'server-{1}.log') install.
-
+```
+	(ConsoleTranscript onFileNamed: 'server-{1}.log') install.
+```
 "
 Class {
-	#name : #NeoConsoleTranscript,
+	#name : #ConsoleTranscript,
 	#superclass : #NonInteractiveTranscript,
 	#instVars : [
 		'date'
@@ -14,7 +15,7 @@ Class {
 }
 
 { #category : #constants }
-NeoConsoleTranscript class >> defaultLogFileName [
+ConsoleTranscript class >> defaultLogFileName [
 	"The default file name that will be used to write to.
 	This needs to have a slot where the date will come."
 	
@@ -22,7 +23,7 @@ NeoConsoleTranscript class >> defaultLogFileName [
 ]
 
 { #category : #accessing }
-NeoConsoleTranscript >> fileNameWithDate [
+ConsoleTranscript >> fileNameWithDate [
 	| newName |
 	newName := self fileName format: { date yyyymmdd }.
 	self 
@@ -31,23 +32,21 @@ NeoConsoleTranscript >> fileNameWithDate [
 	^ newName
 ]
 
-{ #category : #'initialize-release' }
-NeoConsoleTranscript >> initialize [
+{ #category : #initialization }
+ConsoleTranscript >> initialize [
 	super initialize.
 	date := Date today
 ]
 
 { #category : #private }
-NeoConsoleTranscript >> initializeStream [
+ConsoleTranscript >> initializeStream [
 	"Open the file stream that I write to or connect to #stdout.
-	I use the proper line end convention.
 	I will append to regular files.
-	Overwrtitten to use #fileNameWithDate"
+	Overwritten to use #fileNameWithDate"
 	
 	stream := self isStdout 
-		ifTrue: [ FileStream stdout ]
-		ifFalse: [ FileStream fileNamed: self fileNameWithDate ].
-	stream wantsLineEndConversion: true.
+		ifTrue: [ Stdio stdout ]
+		ifFalse: [ self fileNameWithDate asFileReference writeStream ].
 	self isStdout
 		ifTrue: [ stream converter "Force lazy initialization of converter" ] 
 		ifFalse: [ stream setToEnd ].
@@ -55,7 +54,7 @@ NeoConsoleTranscript >> initializeStream [
 ]
 
 { #category : #accessing }
-NeoConsoleTranscript >> stream [ 
+ConsoleTranscript >> stream [ 
 	"Overwritten to check if the date changed on each access"
 	
 	Date today > date
