@@ -42,7 +42,7 @@ ConsoleTelnetServer >> executeRequestResponseLoopOn: stream [
 	| in out command executeResult |
 	in := ZnCharacterReadStream on: stream.
 	out := ZnCharacterWriteStream on: stream.
-	self writeLine: ('Neo Console ', SystemVersion current asString) to: out.
+	self writeLine: ('Console ', SystemVersion current asString) to: out.
 	[
 		stream nextPutAll: 'pharo>>> '; flush.
 		command := (self readInputFrom: in).
