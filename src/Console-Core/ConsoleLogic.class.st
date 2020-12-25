@@ -11,6 +11,12 @@ ConsoleLogic >> exceptionClasses [
 ]
 
 { #category : #protocol }
+ConsoleLogic >> promptString [
+
+	 ^ 'pharo> '
+]
+
+{ #category : #protocol }
 ConsoleLogic >> readInputFrom: stream [
 	| input lineReader line commandClass |
 	lineReader := ZnFastLineReader on: stream.

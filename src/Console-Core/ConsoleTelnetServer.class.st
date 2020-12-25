@@ -44,7 +44,7 @@ ConsoleTelnetServer >> executeRequestResponseLoopOn: stream [
 	out := ZnCharacterWriteStream on: stream.
 	self writeLine: ('Console ', SystemVersion current asString) to: out.
 	[
-		stream nextPutAll: 'pharo>>> '; flush.
+		stream nextPutAll: self promptString; flush.
 		command := (self readInputFrom: in).
 		executeResult := [ command execute ] 
 			on: Error 

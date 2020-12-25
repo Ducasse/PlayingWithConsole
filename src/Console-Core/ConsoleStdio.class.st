@@ -26,7 +26,7 @@ ConsoleStdio >> executeRequestResponseLoop [
 	out := ZnCharacterWriteStream on: Stdio stdout.
 	self writeLine: ('Console ', SystemVersion current asString) to: out.
 	[
-		out nextPutAll: 'pharo> ' "; flush".
+		out nextPutAll: self promptString.
 		command := (self readInputFrom: in).
 		executeResult := [ command execute ] 
 			on: Error 
