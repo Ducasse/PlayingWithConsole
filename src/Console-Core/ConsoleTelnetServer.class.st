@@ -39,18 +39,11 @@ ConsoleTelnetServer class >> startOn: port [
 { #category : #protocol }
 ConsoleTelnetServer >> executeRequestResponseLoopOn: stream [
 
-	| command executeResult |
 	in := ZnCharacterReadStream on: stream.
 	out := ZnCharacterWriteStream on: stream.
 	self sayHello.
-	[
-		stream nextPutAll: self promptString; flush.
-		command := (self readInputFrom: in).
-		executeResult := [ command execute ] 
-			on: Error 
-			do: [ :exception | command printString, ' failed with ', exception printString ].
-		self writeOutput: command result to: out.
-		executeResult notNil	] whileTrue
+	self handleLoop.
+	
 ]
 
 { #category : #private }

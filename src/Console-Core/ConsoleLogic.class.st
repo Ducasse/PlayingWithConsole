@@ -20,9 +20,25 @@ ConsoleLogic >> exceptionClasses [
 ]
 
 { #category : #protocol }
+ConsoleLogic >> handleLoop [
+
+	| executeResult command |
+	[ 
+	out nextPutAll: self promptString; flush.
+	command := self readInputFrom: in.
+	executeResult := [ command execute ]
+		                 on: Error
+		                 do: [ :exception | 
+			                 command printString , ' failed with '
+			                 , exception printString ].
+	self writeOutput: command result to: out.
+	executeResult notNil ] whileTrue
+]
+
+{ #category : #protocol }
 ConsoleLogic >> promptString [
 
-	 ^ 'pharo> '
+	 ^ 'pharo>>> '
 ]
 
 { #category : #protocol }

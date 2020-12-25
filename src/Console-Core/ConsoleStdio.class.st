@@ -21,17 +21,10 @@ ConsoleStdio class >> run [
 
 { #category : #protocol }
 ConsoleStdio >> executeRequestResponseLoop [
-	| command executeResult |
+
 	self initializeInOut.
 	self sayHello.
-	[
-		out nextPutAll: self promptString.
-		command := (self readInputFrom: in).
-		executeResult := [ command execute ] 
-			on: Error 
-			do: [ :exception | command printString, ' failed with ', exception printString ].
-		self writeOutput: command result to: out.
-		executeResult notNil	] whileTrue
+	self handleLoop
 ]
 
 { #category : #protocol }
