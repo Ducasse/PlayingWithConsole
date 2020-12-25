@@ -2,38 +2,41 @@
 I am NeoConsoleTelnetServerTests, holding functional unit tests for NeoConsoleTelnetServer
 "
 Class {
-	#name : #NeoConsoleTelnetServerTests,
-	#superclass : #TestCase,
+	#name : #ConsoleTelnetServerTest,
+	#superclass : #ConsoleTest,
 	#instVars : [
-		'server'
+		'server',
+		'connection',
+		'in',
+		'out'
 	],
 	#category : #'Console-Core'
 }
 
 { #category : #accessing }
-NeoConsoleTelnetServerTests >> localhost [
+ConsoleTelnetServerTest >> localhost [
 	^ #[127 0 0 1] asSocketAddress
 ]
 
 { #category : #running }
-NeoConsoleTelnetServerTests >> setUp [ 
+ConsoleTelnetServerTest >> setUp [ 
 	super setUp.
-	server := ConsoleTelnetServer new start
+	server := ConsoleTelnetServer new start.
+	connection := ZdcSocketStream openConnectionToHost: self localhost port: server port timeout: 10.
+	in := ZnCharacterReadStream on: connection.
+	out := ZnCharacterWriteStream on: connection.
 ]
 
 { #category : #running }
-NeoConsoleTelnetServerTests >> tearDown [
+ConsoleTelnetServerTest >> tearDown [
 	server stop.
 	super tearDown 
 ]
 
 { #category : #testing }
-NeoConsoleTelnetServerTests >> testConnect [
+ConsoleTelnetServerTest >> testConnect [
 
-	| connection in out line |
-	connection := ZdcSocketStream openConnectionToHost: self localhost port: server port timeout: 10.
-	in := ZnCharacterReadStream on: connection.
-	out := ZnCharacterWriteStream on: connection.
+	| line |
 	line := in nextLine.
 	self assert: (line includesSubstring: 'Console').
 	line := in next: 7.
@@ -45,11 +48,8 @@ NeoConsoleTelnetServerTests >> testConnect [
 ]
 
 { #category : #testing }
-NeoConsoleTelnetServerTests >> testEvalSum [
-	| connection in out line x y |
-	connection := ZdcSocketStream openConnectionToHost: self localhost port: server port timeout: 10.
-	in := ZnCharacterReadStream on: connection.
-	out := ZnCharacterWriteStream on: connection.
+ConsoleTelnetServerTest >> testEvalSum [
+	| line x y |
 	line := in nextLine.
 	self assert: (line includesSubstring: 'Console').
 	line := in next: 7.
@@ -64,11 +64,8 @@ NeoConsoleTelnetServerTests >> testEvalSum [
 ]
 
 { #category : #testing }
-NeoConsoleTelnetServerTests >> testGetSystemTimestamp [
-	| connection in out line |
-	connection := ZdcSocketStream openConnectionToHost: self localhost port: server port timeout: 10.
-	in := ZnCharacterReadStream on: connection.
-	out := ZnCharacterWriteStream on: connection.
+ConsoleTelnetServerTest >> testGetSystemTimestamp [
+	| line |
 	in nextLine.
 	in next: 7.
 	out nextPutAll: 'get system.timestamp'; lf; flush.
@@ -79,11 +76,8 @@ NeoConsoleTelnetServerTests >> testGetSystemTimestamp [
 ]
 
 { #category : #testing }
-NeoConsoleTelnetServerTests >> testSumMultiline [
-	| connection in out line x y |
-	connection := ZdcSocketStream openConnectionToHost: self localhost port: server port timeout: 10.
-	in := ZnCharacterReadStream on: connection.
-	out := ZnCharacterWriteStream on: connection.
+ConsoleTelnetServerTest >> testSumMultiline [
+	| line x y |
 	line := in nextLine.
 	self assert: (line includesSubstring: 'Console').
 	line := in next: 7.
