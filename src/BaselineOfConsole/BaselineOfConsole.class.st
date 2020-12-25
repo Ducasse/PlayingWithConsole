@@ -13,5 +13,5 @@ Class {
 { #category : #baselines }
 BaselineOfConsole >> baseline: spec [
 	<baseline>
-	spec for: #common do: [ spec package: 'Neo-Console-Core' ]
+	spec for: #common do: [ spec package: 'Console-Core' ]
 ]
